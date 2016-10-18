@@ -1,0 +1,44 @@
+#!/usr/bin/env bash 
+
+basedir=$(cd $(dirname ${BASH_SOURCE}[0]) && pwd)
+venvdir=${basedir}/venv
+
+if [ ! -d ${venvdir} ]; then
+	mkdir ${venvdir} && cd ${venvdir} || return
+	virtualenv -p python2 py2env
+	virtualenv -p python3 py3env
+fi
+
+pyvers=3/2
+default_python_version=${pyvers%%/*}
+
+while :; do
+	echo -n Specific an virtual environment to run[${pyvers}]:
+	read ver
+
+	if [[ x"${ver}" == x"" ]]; then 
+		ver=${default_python_version}
+	fi
+
+	case ${ver} in 
+		2|3)
+			break
+			;;
+		*)
+			continue
+			;;
+	esac
+done
+
+source ${venvdir}/py${ver}env/bin/activate || return
+
+deplibs="flask sqlalchemy"
+
+for deplib in ${deplibs}; do
+	if [[ x"" == x"$(echo $(pip show ${deplib}))" ]]; then
+		pip install ${deplib}
+	fi
+done
+
+cd ${basedir}
+
