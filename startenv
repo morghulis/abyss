@@ -4,8 +4,15 @@ basedir=$(cd $(dirname ${BASH_SOURCE}[0]) && pwd)
 venvdir=${basedir}/venv
 
 if [ ! -d ${venvdir} ]; then
-	mkdir ${venvdir} && cd ${venvdir} || return
+	mkdir ${venvdir} || return
+fi
+cd ${venvdir}
+
+if [ ! -d "py2env" ]; then 
 	virtualenv -p python2 py2env
+fi
+
+if [ ! -d "py3env" ]; then 
 	virtualenv -p python3 py3env
 fi
 
@@ -16,7 +23,7 @@ while :; do
 	echo -n Specific an virtual environment to run[${pyvers}]:
 	read ver
 
-	if [[ x"${ver}" == x"" ]]; then 
+	if [[ x"$(echo ${ver})" == x"" ]]; then 
 		ver=${default_python_version}
 	fi
 
